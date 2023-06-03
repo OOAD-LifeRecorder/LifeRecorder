@@ -16,4 +16,10 @@ from kivymd.uix.tab import MDTabsBase, MDTabs
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.scrollview import MDScrollView
 from kivymd.uix.screenmanager import MDScreenManager
-
+from kivymd.uix.button import *
+from kivymd.uix.segmentedcontrol import *
+from kivymd.uix.carousel import MDCarousel
+from kivymd.uix.selectioncontrol import MDCheckbox
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.pickers import MDDatePicker
+from kivymd.uix.pickers import MDColorPicker
