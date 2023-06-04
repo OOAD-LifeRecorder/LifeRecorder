@@ -1,7 +1,7 @@
 from datetime import datetime, date
 
 from libs.kivymd_package import *
-from libs.database import Database
+from libs.Database.ToDoDatabase import ToDoDatabase
 
 from Components.ToDoList.DialogContent import DialogContent
 from Components.ToDoList.TaskItem import TaskItem
@@ -16,7 +16,7 @@ class ToDoListScreen(MDScreen):
 class ToDoListModule(MDBoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db = Database()
+        self.db = ToDoDatabase()
         self.task_dialog = None
         self.add_to_do_list()
         self.add_add_button()

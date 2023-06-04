@@ -7,6 +7,11 @@ from Screen.CalendarScreen import CalendarScreen
 from Screen.NotesScreen import NotesScreen
 from Screen.ToDoListScreen import ToDoListScreen
 from Screen.ExpenseTrackerScreen import ExpenseTrackerScreen
+from kivy.utils import platform
+
+if platform == "android":
+    from android.permissions import request_permissions, Permission
+    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
 
 KV = '''
 <ItemDrawer>:
