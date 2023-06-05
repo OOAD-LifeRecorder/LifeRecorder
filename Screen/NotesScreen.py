@@ -52,10 +52,6 @@ class NotesHomePage(MDScreen):
     def turn_to_add_pages(self, *kwargs):
         self.manager.current = 'NotesAddPage'
 
-    def turn_to_delete_pages(self, *kwargs):
-        self.manager.current = 'NotesDeletePage'
-
-
     def get_added_memo(self):
         scroll_view = MDScrollView() 
         if datamanager.all_data == []:  
@@ -93,8 +89,6 @@ class NotesAddPage(MDScreen):
         super(MDScreen, self).__init__() # init 的 kwarg 改掉了
         self.name = "NotesAddPage"
         self.add_widget(self.get_buttons())
-        self.TITLE = None
-        self.CONTENTS = None
         self.add_widget(self.get_textinput())
         self.homepage = kwargs['homepage']
         self.title = ''
