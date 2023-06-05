@@ -195,7 +195,8 @@ class CalendarModule(MDBoxLayout):
             
             day_card =  OneLineAvatarIconListItem(
                 IconLeftWidget(icon="calendar"),
-                text=text_shown
+                text=text_shown,
+                bg_color=(220/256, 220/256, 220/256, 1)
             )
             layout.add_widget(day_card)
             date = now_date.strftime("%Y/%m/%d")
