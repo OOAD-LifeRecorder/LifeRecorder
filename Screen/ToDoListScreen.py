@@ -7,17 +7,20 @@ from Components.ToDoList.DialogContent import DialogContent
 from Components.ToDoList.TaskItem import TaskItem
 
 class ToDoListScreen(MDScreen):
-    def __init__(self, **kwargs):
+    def __init__(self, to_do_list_module, **kwargs):
         super(ToDoListScreen, self).__init__(**kwargs)
         self.name = "To-Do List"
-        self.to_do_list_module = ToDoListModule(orientation="vertical")
+        self.to_do_list_module = to_do_list_module
         self.add_widget(self.to_do_list_module)
+
+    def reload(self):
+        pass
 
 class ToDoListModule(MDBoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.db = ToDoDatabase()
-        self.task_dialog = None
+        self.setup_task_dialog()
         self.add_to_do_list()
         self.add_add_button()
 
@@ -67,7 +70,6 @@ class ToDoListModule(MDBoxLayout):
         self.add_widget(self.add_button)
 
     def mark_task(self, check):
-        print(check.parent.parent)
         if check.active == True:
             self.to_do_list_uncomplete.remove_widget(check.parent.parent)
             check.parent.parent.text = '[s]'+check.parent.parent.text+'[/s]'
@@ -84,23 +86,23 @@ class ToDoListModule(MDBoxLayout):
         task_list.remove_widget(task)
         self.db.delete_task(task.pk)
 
-    def show_task_dialog(self, _):
-        if not self.task_dialog:
-            self.task_dialog = MDDialog(
-                title="Create Task",
-                type="custom",
-                content_cls=DialogContent(
-                    orientation="vertical",
-                    spacing="10dp",
-                    size_hint=(1, None),
-                    height="300dp"
-                ),
-            )
-            self.task_dialog.content_cls.save_button.bind(
-                on_release=self.add_task)
-            self.task_dialog.content_cls.cancel_button.bind(
-                on_release=self.close_dialog)
+    def setup_task_dialog(self):
+        self.task_dialog = MDDialog(
+            title="Create Task",
+            type="custom",
+            content_cls=DialogContent(
+                orientation="vertical",
+                spacing="10dp",
+                size_hint=(1, None),
+                height="300dp"
+            ),
+        )
+        self.task_dialog.content_cls.save_button.bind(
+            on_press=self.add_task)
+        self.task_dialog.content_cls.cancel_button.bind(
+            on_release=self.close_dialog)
 
+    def show_task_dialog(self, _):
         self.task_dialog.open()
 
     def add_task(self, _):

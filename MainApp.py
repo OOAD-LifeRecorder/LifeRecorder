@@ -5,7 +5,7 @@ from kivy.properties import ObjectProperty
 from libs.kivymd_package import *
 from Screen.CalendarScreen import CalendarScreen
 from Screen.NotesScreen import NotesScreen
-from Screen.ToDoListScreen import ToDoListScreen
+from Screen.ToDoListScreen import ToDoListScreen, ToDoListModule
 from Screen.ExpenseTrackerScreen import ExpenseTrackerScreen
 
 
@@ -113,10 +113,11 @@ class MainApp(MDApp):
         return Builder.load_string(KV)
     
     def on_start(self):
+        self.to_do_list_module = ToDoListModule(orientation="vertical")
         screens = [
-            CalendarScreen(),
+            CalendarScreen(self.to_do_list_module),
             NotesScreen(),
-            ToDoListScreen(),
+            ToDoListScreen(self.to_do_list_module),
             ExpenseTrackerScreen()
         ]
         for screen in screens:

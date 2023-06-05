@@ -2,9 +2,6 @@ from libs.Database.Database import Database
 from datetime import datetime
 
 class ToDoDatabase(Database):
-    def _get_db_name(self):
-        return "todo"
-
     def _create_table(self):
         self.cursor.execute(
             """
@@ -64,7 +61,7 @@ class ToDoDatabase(Database):
                 completed = 1
             """
         ).fetchall()
-        print(completed_tasks, uncomplete_tasks)
+        
         return completed_tasks, uncomplete_tasks
     
     def get_tasks_by_date(self, date):
