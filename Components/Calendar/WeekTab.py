@@ -1,5 +1,4 @@
 from libs.kivymd_package import *
-from kivymd.uix.widget import MDWidget
 from kivy.graphics import *
 from kivy.metrics import *
 

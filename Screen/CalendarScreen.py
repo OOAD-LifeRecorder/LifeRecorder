@@ -1,23 +1,65 @@
-from kivy.utils import rgba
-
 from libs.kivymd_package import *
 from libs.Database.ToDoDatabase import ToDoDatabase
+from libs.Database.EventDatabase import EventDatabase
 from datetime import datetime, timedelta
 
 from Components.Calendar.WeekTab import WeekTab
+from Components.Calendar.EventCard import EventCard
+from Components.Calendar.DialogContent import DialogContent
 from Components.ToDoList.ToDoList import ToDoList
 
 class CalendarScreen(MDScreen):
-    def __init__(self, **kwargs):
+    def __init__(self, to_do_list_module, **kwargs):
         super(CalendarScreen, self).__init__(**kwargs)
         self.name = "Calendar"
-        self.add_widget(CalendarModule(orientation="vertical"))
+        self.to_do_list_module = to_do_list_module
+        self.calendar_module = CalendarModule(
+            self.to_do_list_module,
+            orientation="vertical"
+        )
+        self.to_do_list_module.task_dialog.content_cls.save_button.bind(
+            on_release=self.reload_task)
+        self.add_widget(self.calendar_module)
+        self.add_widget(self.add_button())
+
+    def add_button(self):
+        data = {
+            "Event Tag": [
+                "calendar-plus",
+                "on_press", lambda x: print("Add Event"),
+                "on_release", self.add_event_on_press
+            ],
+            "To-Do List": [
+                "format-list-checkbox",
+                "on_press", lambda x: print("Add Task"),
+                "on_release", self.add_task_on_press
+            ],
+        }
+        return MDFloatingActionButtonSpeedDial(
+                    data=data,
+                    hint_animation=True,
+                    root_button_anim=True,
+                )
+    
+    def add_task_on_press(self, *args):
+        self.to_do_list_module.show_task_dialog(None)
+
+    def add_event_on_press(self, *args):
+        self.calendar_module.show_event_dialog(None)
+
+    def reload_task(self, _):
+        self.calendar_module.change_date(self.calendar_module.date_shown)
+        
 
 class CalendarModule(MDBoxLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, to_do_list_module, **kwargs):
         super(CalendarModule, self).__init__(**kwargs)
         self.date_shown = datetime.now()
+        self.to_do_list_module = to_do_list_module
+        self.event_dialog = None
+        self.event_date_dict = {}
         self.__todo_db = ToDoDatabase()
+        self.__event_db = EventDatabase()
         self.__add_calendar_bar()
         self.__add_calendar_content()
 
@@ -42,7 +84,6 @@ class CalendarModule(MDBoxLayout):
         self.change_date(value)
 
     def change_date(self, date):
-        print("change_date")
         self.date_shown = date
         self.week_days_carousel.clear_widgets()
         self.__add_week_days_layout(self.date_shown)
@@ -151,13 +192,25 @@ class CalendarModule(MDBoxLayout):
         for i in range(0, 7):
             now_date = self.date_shown + timedelta(days=i)
             text_shown = now_date.strftime("%m/%d %a")
-            _, to_do_list_uncomplete = self.__todo_db.get_tasks_by_date(now_date)
             
             day_card =  OneLineAvatarIconListItem(
                 IconLeftWidget(icon="calendar"),
                 text=text_shown
             )
             layout.add_widget(day_card)
+            date = now_date.strftime("%Y/%m/%d")
+            events = self.__event_db.get_events_by_date(date)
+            for event in events:
+                event_card = EventCard(
+                    event[0], event[1], event[2])
+                layout.add_widget(event_card)
+                event_card.delete_button.bind(on_release=self.delete_event)
+
+                if date not in self.event_date_dict:
+                    self.event_date_dict = []
+                self.event_date_dict.append(event_card)
+            
+            _, to_do_list_uncomplete = self.__todo_db.get_tasks_by_date(now_date)
             layout.add_widget(
                 ToDoList(
                     to_do_list_uncomplete,
@@ -168,3 +221,40 @@ class CalendarModule(MDBoxLayout):
 
         return layout
     
+    def show_event_dialog(self, _):
+        if not self.event_dialog:
+            self.event_dialog = MDDialog(
+                title="Create Event",
+                type="custom",
+                content_cls=DialogContent(
+                    orientation="vertical",
+                    spacing="10dp",
+                    size_hint=(1, None),
+                    height="300dp"
+                ),
+            )
+            self.event_dialog.content_cls.save_button.bind(
+                on_release=self.add_event)
+            self.event_dialog.content_cls.cancel_button.bind(
+                on_release=self.close_dialog)
+
+        self.event_dialog.open()
+
+    def add_event(self, _):
+        self.__event_db.create_event(
+            self.event_dialog.content_cls.event_title.text, 
+            self.event_dialog.content_cls.date_text.text,
+            self.event_dialog.content_cls.color
+        )
+        
+        self.change_date(self.date_shown)
+        self.close_dialog()
+
+    def delete_event(self, instance):
+        event_list = instance.parent.parent.parent
+        event = instance.parent.parent
+        event_list.remove_widget(event)
+        self.__event_db.delete_event(event.pk)
+
+    def close_dialog(self, *args):
+        self.event_dialog.dismiss()
