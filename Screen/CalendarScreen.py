@@ -42,9 +42,10 @@ class CalendarModule(MDBoxLayout):
         self.change_date(value)
 
     def change_date(self, date):
+        print("change_date")
         self.date_shown = date
         self.week_days_carousel.clear_widgets()
-        self.__add_week_days_layout()
+        self.__add_week_days_layout(self.date_shown)
 
         self.calendar_content.remove_widget(self.day_list)
         self.day_list = self.get_layout()
@@ -96,36 +97,53 @@ class CalendarModule(MDBoxLayout):
         # 取得當月天數
         self.week_days_carousel = MDCarousel(
             direction='right', 
-            loop=True,
             size_hint_y=.08,
+            loop=True
         )
         
-        self.__add_week_days_layout()
+        self.week_days_carousel.bind(on_slide_complete=self.carousel_slide_complete)
+        self.__add_week_days_layout(self.date_shown)
         self.add_widget(self.week_days_carousel)
-    
-    def __add_week_days_layout(self):
-        first_date = self.date_shown - timedelta(days=self.date_shown.weekday())
-        for k in range(3):
-            bar_list = MDBoxLayout(
-                orientation="horizontal",
-                size_hint_y=.8
-            )
-            for i in range(0, 7):
-                now_date = first_date + timedelta(days=7*k+i)
-                date_shown = now_date.strftime('%d')
-                ref = now_date.strftime('%Y%m%d')
 
-                
-                if now_date == self.date_shown:
-                    tab = WeekTab(ref=ref, text=date_shown, active=True)
-                    self._current_tab = tab
-                else:
-                    tab = WeekTab(ref=ref, text=date_shown)
+    def carousel_slide_complete(self, carousel, left, now, right):
+        carousel.remove_widget(left)
+        carousel.remove_widget(right)
+        index = len(now.children) - 1
+        now_first_date = datetime.strptime(now.children[index].ref, '%Y%m%d')
+        carousel.add_widget(self.__get_week_days_layout(now_first_date + timedelta(days=7)))
+        carousel.add_widget(self.__get_week_days_layout(now_first_date - timedelta(days=7)))
+        self.month_button.text = now_first_date.strftime("%Y %B")
 
-                tab.label.bind(on_ref_press=self.on_week_day_press)
-                bar_list.add_widget(tab)
-            self.week_days_carousel.add_widget(bar_list)
+    def __add_week_days_layout(self, date):
+        pre_slide_date = date - timedelta(days=7)
+        next_slide_date = date + timedelta(days=7)
+        self.week_days_carousel.add_widget(
+            self.__get_week_days_layout(date))
+        self.week_days_carousel.add_widget(
+            self.__get_week_days_layout(next_slide_date))
+        self.week_days_carousel.add_widget(
+            self.__get_week_days_layout(pre_slide_date))
     
+    def __get_week_days_layout(self, date):
+        first_date = date - timedelta(days=self.date_shown.weekday())
+        bar_list = MDBoxLayout(
+            orientation="horizontal",
+            size_hint_y=.8
+        )
+        for i in range(0, 7):
+            now_date = first_date + timedelta(days=i)
+            date_shown = now_date.strftime('%d')
+            ref = now_date.strftime('%Y%m%d')
+            if now_date.date() == self.date_shown.date():
+                tab = WeekTab(ref=ref, text=date_shown, active=True)
+                self._current_tab = tab
+            else:
+                tab = WeekTab(ref=ref, text=date_shown)
+
+            tab.label.bind(on_ref_press=self.on_week_day_press)
+            bar_list.add_widget(tab)
+        return bar_list
+
     def get_layout(self):
         layout = MDList()
 
