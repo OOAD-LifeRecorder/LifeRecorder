@@ -8,6 +8,7 @@ from Screen.NotesScreen import NotesScreen
 from Screen.ToDoListScreen import ToDoListScreen
 from Screen.ExpenseTrackerScreen import ExpenseTrackerScreen
 
+
 KV = '''
 <ItemDrawer>:
     theme_text_color: "Custom"

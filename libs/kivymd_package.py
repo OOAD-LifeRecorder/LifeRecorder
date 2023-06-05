@@ -23,3 +23,4 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.pickers import MDDatePicker
 from kivymd.uix.pickers import MDColorPicker
+from kivymd.uix.tooltip import MDTooltip

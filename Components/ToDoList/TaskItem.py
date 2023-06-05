@@ -1,5 +1,8 @@
 from libs.kivymd_package import *
 
+class TooltipMDIconButton(MDIconButton, MDTooltip):
+    pass
+
 class TaskItem(TwoLineAvatarIconListItem):
     def __init__(self, pk=None, **kwargs):
         super().__init__(**kwargs)
@@ -8,10 +11,12 @@ class TaskItem(TwoLineAvatarIconListItem):
             theme_text_color="Custom",
             text_color=[1, 0, 0, 1]
         )
-        self.category = MDIconButton(
+        self.category = TooltipMDIconButton(
             icon='circle',
             theme_text_color="Custom",
+            tooltip_text='circle',
             text_color=[229/256, 228/256, 226/256, 1],
+            pos_hint={"center_x": .5, "center_y": .5}
         )
         self.pk = pk
         self._add_check()
