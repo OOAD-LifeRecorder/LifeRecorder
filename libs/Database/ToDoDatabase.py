@@ -88,7 +88,6 @@ class ToDoDatabase(Database):
                 completed = 1 and due_date = '{date}'
             """
         ).fetchall()
-        print(uncomplete_tasks)
         return completed_tasks, uncomplete_tasks
     
     def get_ordered_uncomplete_tasks(self, category="All", type="date"):

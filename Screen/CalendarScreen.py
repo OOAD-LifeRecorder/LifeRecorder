@@ -245,7 +245,7 @@ class CalendarModule(MDBoxLayout):
         self.__event_db.create_event(
             self.event_dialog.content_cls.event_title.text, 
             self.event_dialog.content_cls.date_text.text,
-            self.event_dialog.content_cls.color
+            self.event_dialog.content_cls.color_index
         )
         
         self.change_date(self.date_shown)

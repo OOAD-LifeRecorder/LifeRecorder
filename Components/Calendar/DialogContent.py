@@ -99,7 +99,7 @@ class DialogContent(MDBoxLayout):
         menu_items = self.get_color_menu(color)
         self.color_button.text_color = color
         self.menu.dismiss()
-        self.color = color_list.index(color)
+        self.color_index = color_list.index(color)
         self.menu = MDDropdownMenu(
             caller=self.color_button,
             items=menu_items,

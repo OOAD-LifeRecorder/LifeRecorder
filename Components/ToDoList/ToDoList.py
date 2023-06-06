@@ -12,7 +12,6 @@ class ToDoList(MDList):
         self.add_task_list()
 
     def add_task_list(self):
-        print(self.tasks_list)
         for task in self.tasks_list:
             add_task = TaskItem(
                 pk=task[0],

@@ -158,12 +158,6 @@ class ToDoListModule(MDBoxLayout):
         self.add_button.bind(on_release=self.show_task_dialog)
         self.add_widget(self.add_button)
 
-    def date_on_active(self, _):
-        print("date")
-
-    def priority_on_active(self, _):
-        print("priority")
-
     def mark_task(self, check):
         if check.active == True:
             self.to_do_list_uncomplete.remove_widget(check.parent.parent)
@@ -207,7 +201,7 @@ class ToDoListModule(MDBoxLayout):
             self.task_dialog.content_cls.date_text.text,
             self.task_dialog.content_cls.category_text.text
         )
-        print(created_task)
+        
         self.to_do_list_uncomplete.add_widget(
             TaskItem(
                 pk=created_task[0], 
