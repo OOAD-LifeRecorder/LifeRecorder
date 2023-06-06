@@ -37,7 +37,7 @@ class CalendarScreen(MDScreen):
         }
         return MDFloatingActionButtonSpeedDial(
                     data=data,
-                    hint_animation=True,
+                    hint_animation=False,
                     root_button_anim=True,
                 )
     

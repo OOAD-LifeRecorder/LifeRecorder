@@ -45,33 +45,7 @@ class ToDoListModule(MDBoxLayout):
         self.to_do_list_completed = MDList()
         self.to_do_list_uncomplete = MDList()
 
-        completed_tasks, uncomplete_tasks = self.db.get_tasks()
-
-        if uncomplete_tasks != []:
-            for task in uncomplete_tasks:
-                add_task = TaskItem(
-                    pk=task[0],
-                    text=task[1], 
-                    secondary_text=task[2],
-                    tertiary_text=task[5], 
-                    priority=task[4]
-                )
-                add_task.check.bind(on_release=self.mark_task)
-                add_task.delete_button.bind(on_release=self.delete_task)
-                self.to_do_list_uncomplete.add_widget(add_task)
-
-        if completed_tasks != []:
-            for task in completed_tasks:
-                add_task = TaskItem(
-                    pk=task[0],
-                    text=task[1], 
-                    secondary_text=task[2], 
-                    priority=task[4]
-                )
-                add_task.check.active = True
-                add_task.check.bind(on_release=self.mark_task)
-                add_task.delete_button.bind(on_release=self.delete_task)
-                self.to_do_list_completed.add_widget(add_task)
+        self.add_uncomplete_and_completed_list_item()
 
         scroll_view_uncomplete = MDScrollView(do_scroll=(False, True))
         scroll_view_uncomplete.add_widget(self.to_do_list_uncomplete)
@@ -123,13 +97,42 @@ class ToDoListModule(MDBoxLayout):
 
         self.add_widget(self.to_do_list)
 
+    def add_uncomplete_and_completed_list_item(self, category="All"):
+        completed_tasks, uncomplete_tasks = self.db.get_tasks(category)
+
+        if uncomplete_tasks != []:
+            for task in uncomplete_tasks:
+                add_task = TaskItem(
+                    pk=task[0],
+                    text=task[1], 
+                    secondary_text=task[2],
+                    tertiary_text=task[5], 
+                    priority=task[4]
+                )
+                add_task.check.bind(on_release=self.mark_task)
+                add_task.delete_button.bind(on_release=self.delete_task)
+                self.to_do_list_uncomplete.add_widget(add_task)
+
+        if completed_tasks != []:
+            for task in completed_tasks:
+                add_task = TaskItem(
+                    pk=task[0],
+                    text=task[1], 
+                    secondary_text=task[2], 
+                    priority=task[4]
+                )
+                add_task.check.active = True
+                add_task.check.bind(on_release=self.mark_task)
+                add_task.delete_button.bind(on_release=self.delete_task)
+                self.to_do_list_completed.add_widget(add_task)
+
     def open_menu(self, _):
         self.drop_menu.open()
 
     def set_item(self, type) -> None:
         self.to_do_list_uncomplete.clear_widgets()
         uncomplete_tasks = self.db.get_ordered_uncomplete_tasks(
-            type=type)
+            category=self.selected_category.text ,type=type)
         if uncomplete_tasks != []:
             for task in uncomplete_tasks:
                 add_task = TaskItem(
@@ -224,6 +227,8 @@ class ToDoListModule(MDBoxLayout):
             category_list = self.db.get_category_list()
             for category in category_list:
                 text = category[0] if category[0] != "" else "None"
+                if self.selected_category.text == text:
+                    text = "All"
                 self.category_list.add_widget(
                     OneLineAvatarIconListItem(
                         IconLeftWidget(
@@ -231,13 +236,24 @@ class ToDoListModule(MDBoxLayout):
                         ),
                         text=text,
                         bg_color=(232/256,246/256,248/256,255/256),
-                        divider_color=(91/256,191/256,205/256,255/256)
+                        divider_color=(91/256,191/256,205/256,255/256),
+                        on_release=self.category_on_press
                     )
                 )
             self.category_state = 1
             self.selected_category.ids.chevron.icon = "chevron-down"
         else:
             self.close_panel(instance)
+
+    def category_on_press(self, instance):
+        text_selected = instance.text
+        instance.text = self.selected_category.text
+        self.selected_category.text = text_selected
+        self.to_do_list_completed.clear_widgets()
+        self.to_do_list_uncomplete.clear_widgets()
+        self.add_uncomplete_and_completed_list_item(category=text_selected)
+        self.drop_item.text = "Date"
+        self.close_panel(self.selected_category)
 
     def close_panel(self, instance):
         self.category_list.clear_widgets()

@@ -44,9 +44,9 @@ class ToDoDatabase(Database):
         ).fetchall()
         return created_task[-1]
 
-    def get_tasks(self):
+    def get_tasks(self, category="All"):
         today = datetime.now().strftime("%Y/%m/%d")
-        uncomplete_tasks = self.get_ordered_uncomplete_tasks()
+        uncomplete_tasks = self.get_ordered_uncomplete_tasks(category)
         completed_tasks = self.cursor.execute(
             f"""
             SELECT 
@@ -54,10 +54,19 @@ class ToDoDatabase(Database):
             FROM tasks 
             WHERE 
                 completed = 1 and due_date >= '{today}'
+                {self.__get_category_condition(category)}
             """
         ).fetchall()
         
         return completed_tasks, uncomplete_tasks
+    
+    def __get_category_condition(self, category):
+        if category == "All":
+            return ""
+        elif category == "None":
+            return "and category = ''"
+        else:
+            return f"and category == '{category}'"
     
     def get_tasks_by_date(self, date):
         date = date.strftime('%Y/%m/%d')
@@ -82,7 +91,7 @@ class ToDoDatabase(Database):
         print(uncomplete_tasks)
         return completed_tasks, uncomplete_tasks
     
-    def get_ordered_uncomplete_tasks(self, type="date"):
+    def get_ordered_uncomplete_tasks(self, category="All", type="date"):
         if type == "Priority":
             col = "priority"
             ord = "DESC"
@@ -97,6 +106,7 @@ class ToDoDatabase(Database):
             FROM tasks 
             WHERE 
                 completed = 0
+                {self.__get_category_condition(category)}
             ORDER BY {col} {ord}
             """
         ).fetchall()
