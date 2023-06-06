@@ -12,11 +12,14 @@ class ToDoList(MDList):
         self.add_task_list()
 
     def add_task_list(self):
+        print(self.tasks_list)
         for task in self.tasks_list:
             add_task = TaskItem(
                 pk=task[0],
                 text=task[1], 
                 secondary_text=task[2],
+                tertiary_text=task[5],
+                priority=task[4],
                 size_hint_x=.8,
                 pos_hint={"center_x": .5}
             )

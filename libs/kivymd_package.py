@@ -28,3 +28,6 @@ from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.widget import MDWidget
 from kivymd.uix.dropdownitem import MDDropDownItem
 from kivymd.uix.menu import *
+from kivymd.uix.segmentedcontrol import (
+    MDSegmentedControl, MDSegmentedControlItem
+)

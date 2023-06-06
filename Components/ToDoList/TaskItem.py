@@ -1,23 +1,20 @@
 from libs.kivymd_package import *
 
-class TooltipMDIconButton(MDIconButton, MDTooltip):
-    pass
-
-class TaskItem(TwoLineAvatarIconListItem):
-    def __init__(self, pk=None, **kwargs):
+class TaskItem(ThreeLineAvatarIconListItem):
+    def __init__(self, pk=None, priority=1, **kwargs):
         super().__init__(**kwargs)
         self.delete_button = MDIconButton(
             icon='trash-can-outline',
             theme_text_color="Custom",
             text_color=[1, 0, 0, 1]
         )
-        self.category = TooltipMDIconButton(
-            icon='circle',
+        self.category = MDIconButton(
+            icon='star',
             theme_text_color="Custom",
-            tooltip_text='circle',
-            text_color=[229/256, 228/256, 226/256, 1],
+            text_color=[255/256, 192/256, 0/256, 1],
             pos_hint={"center_x": .5, "center_y": .5}
         )
+        self.priority = MDLabel(text=f"{priority}")
         self.pk = pk
         self._add_check()
         self._add_right_items()
@@ -28,10 +25,12 @@ class TaskItem(TwoLineAvatarIconListItem):
 
     def _add_right_items(self):
         self.right_items = RightItems()
+        
         self.right_items.add_widget(self.category)
+        self.right_items.add_widget(self.priority)
         self.right_items.add_widget(self.delete_button)
         self.ids._right_container.width = self.right_items.width
-        self.right_items.x = self.right_items.width
+        self.ids._right_container.x = self.right_items.width
         self.add_widget(self.right_items)
 
 
