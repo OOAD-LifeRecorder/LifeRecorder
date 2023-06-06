@@ -7,6 +7,7 @@ from Components.Calendar.WeekTab import WeekTab
 from Components.Calendar.EventCard import EventCard
 from Components.Calendar.DialogContent import DialogContent
 from Components.ToDoList.ToDoList import ToDoList
+from Screen.ExpenseTrackerScreen import DatabaseEmulator
 
 class CalendarScreen(MDScreen):
     def __init__(self, to_do_list_module, **kwargs):
@@ -193,10 +194,15 @@ class CalendarModule(MDBoxLayout):
             now_date = self.date_shown + timedelta(days=i)
             text_shown = now_date.strftime("%m/%d %a")
             
+            emulator_db = DatabaseEmulator()
+            total_expense = emulator_db.db_get_total_expense_by_date(self.date_shown.date())
             day_card =  OneLineAvatarIconListItem(
                 IconLeftWidget(icon="calendar"),
+                RightItems(
+                    MDRectangleFlatButton(text=f"{total_expense}")
+                ),
                 text=text_shown,
-                bg_color=(220/256, 220/256, 220/256, 1)
+                bg_color=(220/256, 220/256, 220/256, 1),
             )
             layout.add_widget(day_card)
             date = now_date.strftime("%Y/%m/%d")
@@ -259,3 +265,6 @@ class CalendarModule(MDBoxLayout):
 
     def close_dialog(self, *args):
         self.event_dialog.dismiss()
+
+class RightItems(IRightBodyTouch, MDBoxLayout):
+    adaptive_width = True
