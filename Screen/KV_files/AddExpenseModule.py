@@ -6,7 +6,7 @@ AddExpenseModuleKV = '''
 #:import rgba kivy.utils.get_color_from_hex
 <AddExpenseModule>: 
     # md_bg_color: rgba("#f5efff")
-    size_hint: ( 0.8, 0.83 )
+    size_hint: ( 0.9, 0.83 )
     row_default_height: self.height/12
     pos_hint: {'center_x': .5, 'y':.05}
     spacing: "3dp"
@@ -63,6 +63,7 @@ AddExpenseModuleKV = '''
             MDTextField:
                 id: expense_name
                 size_hint_x: 0.8
+                font_size: 16
                 hint_text: "Name your expense..."
                 on_text_validate: root.set_expense_name()
                 multiline: False
@@ -82,6 +83,7 @@ AddExpenseModuleKV = '''
             MDTextField:
                 id: expense_amount
                 size_hint_x: 0.8
+                font_size: 16
                 hint_text: "How much did you spend?"
                 on_text_validate: root.set_expense_amount()
                 input_filter : 'int'
@@ -167,29 +169,29 @@ AddExpenseModuleKV = '''
             
             MDLabel:
                 text: "Total Expense: "
-                font_style: "H6"
+                font_style: "Subtitle2"
             MDLabel:
                 id: total_expense
                 text_color: "red"
+                font_style: "Subtitle2"
             
         MDGridLayout:
             rows: 1
-            font_style: "Subtitle1"
             MDLabel:
-                text: "Budget left for this month: "
-                font_style: "Body2"
+                text: "Budget surplus (month): "
+                font_style: "Caption"
                 # text_color:
             MDLabel:
                 id: surplus_month
-                font_style: "Body2"
+                font_style: "Caption"
                 text_color: "green"
             MDLabel:
-                text: "Budget left for today: "
-                font_style: "Body2"
+                text: "Budget surplus (today): "
+                font_style: "Caption"
                 # text_color:
             MDLabel:
                 id: surplus_day
-                font_style: "Body2"
+                font_style: "Caption"
                 text_color: "green"
 
     ########################### Budget #############################
@@ -213,8 +215,8 @@ AddExpenseModuleKV = '''
         MDIconButton:
             id: the_item_edit
             icon: 'square-edit-outline'
-            # on_release:
-            #     root.edit_date(the_list_item)
+            on_release:
+                root.update_current_expense(the_list_item)
             
         MDIconButton:
             id: the_item_delete
