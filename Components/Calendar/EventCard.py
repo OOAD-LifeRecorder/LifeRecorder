@@ -16,11 +16,11 @@ class EventCard(MDCardSwipe):
     def __init__(self, pk, text, category, **kwargs):
         super().__init__(**kwargs)
         self.pk = pk
-        self.delete_button = self.get_delete_button()
+        self.delete_button = self.__get_delete_button()
         self.size_hint_y=None
         self.height="30dp"
         self.add_widget(MDCardSwipeLayerBox(self.delete_button))
-        color = self.get_color_by_category(category)
+        color = self.__get_color_by_category(category)
         self.add_widget(MDCardSwipeFrontBox(
             MDLabel(
                 text=f"   {text}",
@@ -33,11 +33,11 @@ class EventCard(MDCardSwipe):
             size_hint=(.98, 1),
         ))
 
-    def get_delete_button(self):
+    def __get_delete_button(self):
         return MDIconButton(
                     icon="trash-can",
                     pos_hint={"center_y": 0.5},
                 )
     
-    def get_color_by_category(self, category):
+    def __get_color_by_category(self, category):
         return color_list[category]

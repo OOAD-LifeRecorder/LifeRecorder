@@ -168,7 +168,7 @@ AddBudgetModuleKV = '''
                 font_style: "Caption"
 
             MDLabel:
-                text: "Expense/day: "
+                text: "Budget/day: "
                 font_style: "Caption"
             MDLabel:
                 id: expense_per_day

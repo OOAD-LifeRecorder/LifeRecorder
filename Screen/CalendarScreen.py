@@ -15,7 +15,6 @@ class CalendarScreen(MDScreen):
         self.name = "Calendar"
         self.to_do_list_module = to_do_list_module
         self.calendar_module = CalendarModule(
-            self.to_do_list_module,
             orientation="vertical"
         )
         self.to_do_list_module.task_dialog.content_cls.save_button.bind(
@@ -53,10 +52,9 @@ class CalendarScreen(MDScreen):
         
 
 class CalendarModule(MDBoxLayout):
-    def __init__(self, to_do_list_module, **kwargs):
+    def __init__(self, **kwargs):
         super(CalendarModule, self).__init__(**kwargs)
         self.date_shown = datetime.now()
-        self.to_do_list_module = to_do_list_module
         self.event_dialog = None
         self.event_date_dict = {}
         self.__todo_db = ToDoDatabase()
