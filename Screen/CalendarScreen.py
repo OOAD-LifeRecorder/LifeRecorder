@@ -193,8 +193,7 @@ class CalendarModule(MDBoxLayout):
             text_shown = now_date.strftime("%m/%d %a")
             
             emulator_db = DatabaseEmulator()
-            total_expense = 0
-            emulator_db.db_get_total_expense_by_date(now_date.date())
+            total_expense = emulator_db.db_get_total_expense_by_date(now_date.date())
             day_card =  OneLineAvatarIconListItem(
                 IconLeftWidget(icon="calendar"),
                 RightItems(
