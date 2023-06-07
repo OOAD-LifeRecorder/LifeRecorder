@@ -123,9 +123,13 @@ class DatabaseEmulator(Expense, Budget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    # @classmethod
-    # def db_add_expense(cls, e):
-    #     cls.ExpenseDatabase.append(e)
+    @classmethod
+    def db_get_total_expense_by_date(self, date):
+        total = 0
+        for e in self.ExpenseDatabase:
+            if e.date == date:
+                total += e.expense
+        return total
 
     @classmethod
     def db_delete_expense(cls, del_e):
@@ -163,30 +167,6 @@ class DatabaseEmulator(Expense, Budget):
             if e.date >= date_range[0] and e.date <= date_range[1]:
                 elist.append(e)
         return elist
-
-    @classmethod
-    def db_get_total_expense_by_date(cls, date):
-        total = 0
-        for e in cls.ExpenseDatabase:
-            if e.date == date:
-                total += e.expense
-        return total
-
-    @classmethod
-    def db_get_total_expense_by_date_range(cls, date_range):
-        total = 0
-        for e in cls.ExpenseDatabase:
-            if e.date >= date_range[0] and e.date <= date_range[1]:
-                total += e.expense
-        return total
-
-    @classmethod
-    def db_get_total_expense_by_type(cls, type):
-        total = 0
-        for e in cls.ExpenseDatabase:
-            if e.type == type:
-                total += e.expense
-        return total
 
     @classmethod
     def db_print_all_expenses(cls):
@@ -329,9 +309,6 @@ class ExpenseTrackerScreen(MDScreen):
         if len(self.children) > 0:
             self.children[0].clear_widgets()
 
-    def on_enter(self):
-        DatabaseEmulator.db_print_all_expenses()
-
     def on_leave(self):
         self.current_module.save_to_database()
 
@@ -358,6 +335,7 @@ class AddExpenseModule(MDGridLayout):
         self.current_expense.date = datetime.date.today()
 
     def init(self):
+        self.clear_input()
         self.expense_list_widget.clear_widgets()
         self.create_new_item()
         self.init_expense_list()
@@ -399,9 +377,9 @@ class AddExpenseModule(MDGridLayout):
         for e in self.expense_list:
             print(f'{e.name}: [{e.type}] [{e.eid}] [{e.expense}]')
 
-    def update_value(self, list_index, the_list_item):
+    def update_value(self, widget_index, the_list_item):
         self.old_type = self.current_expense.type
-        expense_index = len(self.ids.expense_list_widget.children)-list_index-1
+        expense_index = len(self.ids.expense_list_widget.children)-widget_index-1
         if len(self.expense_list) > expense_index:
             self.current_expense = self.expense_list[expense_index]
 
@@ -419,7 +397,7 @@ class AddExpenseModule(MDGridLayout):
         self.ids.expense_name.text = new_name
 
         self.the_list_item = the_list_item
-        self.the_list_item.list_index = list_index
+        self.the_list_item.widget_index = widget_index
         self.current_expense.status = 1
 
     def add_list_item(self, e):
@@ -446,9 +424,13 @@ class AddExpenseModule(MDGridLayout):
 
         if self.current_expense.status == 1:
             self.ids.expense_list_widget.add_widget(
-                list_item, self.the_list_item.list_index)
+                list_item, self.the_list_item.widget_index)
         else:
             self.ids.expense_list_widget.add_widget(list_item)
+
+    def delete_list_item(self, expense_index):
+        self.expense_list.remove(self.expense_list[expense_index])
+        self.update_total_and_budget_view()
 
     def save_expense(self):
         if self.check_input_valid():
@@ -505,8 +487,9 @@ class AddExpenseModule(MDGridLayout):
         # Update view
         self.ids.expense_amount.text = ""
         self.ids.expense_name.text = ""
-        self.ids[self.current_expense.type].line_width = 0.001
-        self.ids[self.current_expense.type].line_color = "#ffffff"
+        if self.current_expense.type != "":
+            self.ids[self.current_expense.type].line_width = 0.001
+            self.ids[self.current_expense.type].line_color = "#ffffff"
         self.ids.add.text = 'Add'
         self.ids.total_expense.text = "$0"
         if hasattr(self.the_list_item, "bg_color"):
@@ -584,6 +567,8 @@ class AddBudgetModule(MDGridLayout):
         self.date_range = get_month_range(today.year, today.month)
         self.set_date_range(self.date_range)
         self.set_budget_type("all")
+        self.update_budget_overview()
+        self.update_expense_overview()
 
     def init_budget_list(self):
         d = self.date_range[0]
@@ -703,6 +688,7 @@ class AddBudgetModule(MDGridLayout):
         list_item.secondary_text_color = str_style["color"]
 
         self.ids.budget_list_widget.add_widget(list_item)
+
 
     def get_current_budget_report(self, type):
         return next((b for b in self.budget_list if b.budget_instance.type == type), None)

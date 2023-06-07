@@ -242,15 +242,18 @@ class ListExpenseItemWithIcon(TwoLineAvatarIconListItem):
         self.current_module = current_module
 
     def delete_item(self, the_list_item):
+        widget_index = self.parent.children.index(the_list_item)
+        expense_index = len(self.parent.children)-widget_index-1
+        self.current_module.delete_list_item(expense_index)
         self.parent.remove_widget(the_list_item)
 
     def update_current_expense(self, the_list_item):
-        current_index = self.parent.children.index(the_list_item)
+        widget_index = self.parent.children.index(the_list_item)
         for item in self.parent.children:
             item.bg_color = "#DDDDDD"
 
         self.bg_color = "#afefdd"
-        self.current_module.update_value(current_index, self)
+        self.current_module.update_value(widget_index, self)
 
     # def edit_date(self, the_list_item):
     #     self.current_screen.show_date_picker()
