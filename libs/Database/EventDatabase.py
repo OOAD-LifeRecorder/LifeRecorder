@@ -2,9 +2,6 @@ from libs.Database.Database import Database
 from datetime import datetime
 
 class EventDatabase(Database):
-    def _get_db_name(self):
-        return "event"
-
     def _create_table(self):
         self.cursor.execute(
             """
