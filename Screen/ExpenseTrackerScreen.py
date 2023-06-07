@@ -142,8 +142,8 @@ class DatabaseEmulator(Expense, Budget):
     def db_update_expense(cls, new_e):
         for e in cls.ExpenseDatabase:
             if e.eid == new_e.eid:
-                e = copy.deepcopy(new_e)
-                return
+                cls.ExpenseDatabase.remove(e)
+                break
         cls.ExpenseDatabase.append(new_e)
 
     @classmethod
@@ -436,14 +436,14 @@ class AddExpenseModule(MDGridLayout):
         if self.check_input_valid():
             # edited
             if self.current_expense.status == 1:
-                self.current_expense.edited = 1
                 self.expense_list_widget.remove_widget(self.the_list_item)
 
             self.add_list_item(self.current_expense)
             # add new
             if self.current_expense.status == 0:
                 self.expense_list.append(self.current_expense)
-
+            
+            self.current_expense.edited = 1
             self.clear_input()
             self.init_budget_and_expense_overview()
             self.update_total_and_budget_view()
@@ -534,6 +534,7 @@ class AddExpenseModule(MDGridLayout):
     def save_to_database(self):
         for e in self.expense_list:
             if e.edited == 1:
+                print("update...")
                 DatabaseEmulator.db_update_expense(e)
             elif e.edited == 2:
                 DatabaseEmulator.db_delete_expense(e)
@@ -732,7 +733,7 @@ class AddBudgetModule(MDGridLayout):
         self.save_to_database()
         self.expense_list = DatabaseEmulator.db_get_expense_list_by_date_range(
             date_range)
-
+        print(self.expense_list)
         self.date_range = date_range
         self.budget_list_widget.clear_widgets()
         self.init_budget_list()
