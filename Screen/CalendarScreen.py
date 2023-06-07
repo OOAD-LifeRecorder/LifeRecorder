@@ -80,6 +80,7 @@ class CalendarModule(MDBoxLayout):
         date_dialog.open()
 
     def on_date_save(self, instance, value, date_range):
+        value = datetime.combine(value, datetime.min.time())
         self.change_date(value)
 
     def change_date(self, date):
@@ -179,7 +180,6 @@ class CalendarModule(MDBoxLayout):
                 self._current_tab = tab
             else:
                 tab = WeekTab(ref=ref, text=date_shown)
-
             tab.label.bind(on_ref_press=self.on_week_day_press)
             bar_list.add_widget(tab)
         return bar_list
@@ -193,7 +193,8 @@ class CalendarModule(MDBoxLayout):
             text_shown = now_date.strftime("%m/%d %a")
             
             emulator_db = DatabaseEmulator()
-            total_expense = emulator_db.db_get_total_expense_by_date(now_date.date())
+            total_expense = 0
+            emulator_db.db_get_total_expense_by_date(now_date.date())
             day_card =  OneLineAvatarIconListItem(
                 IconLeftWidget(icon="calendar"),
                 RightItems(
