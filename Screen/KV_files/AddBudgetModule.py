@@ -4,8 +4,8 @@ from kivymd.uix.list import TwoLineAvatarIconListItem
 
 AddBudgetModuleKV = '''
 <AddBudgetModule>:
-    size_hint: ( 0.8, 0.83 )
-    row_default_height: self.height/15
+    size_hint: ( 0.9, 0.83 )
+    row_default_height: self.height/13
     pos_hint: {'center_x': .5, 'y':.05}
     spacing: "5dp"
     cols: 1
@@ -71,6 +71,7 @@ AddBudgetModuleKV = '''
                 hint_text: "Enter your budget for this month..."
                 input_filter : 'int'
                 multiline: False
+                font_size: 16
 
     # AddBudgetButton:
     MDGridLayout:
@@ -121,13 +122,13 @@ AddBudgetModuleKV = '''
         MDLabel:
             halign:"center"
             id:date_range
-            font_style: "H5"
+            font_style: "Button"
 
     # ShowExpenseWithSurplus
     MDGridLayout:
         cols: 1
         #md_bg_color: rgba("#f8efff")
-        size_hint: ( 0.6, 10)
+        size_hint: ( 0.6, 8)
         pos_hint: {'center_x': .5, 'y':.175}
 
         MDAnchorLayout:
@@ -160,17 +161,18 @@ AddBudgetModuleKV = '''
         
             MDLabel:
                 text: "Total Expense: "
-                font_style: "Body2"
+                font_style: "Caption"
             MDLabel:
                 id: total_expense
                 text_color: "red"
+                font_style: "Caption"
 
             MDLabel:
-                text: "Expense for each day: "
-                font_style: "Body2"
+                text: "Expense/day: "
+                font_style: "Caption"
             MDLabel:
                 id: expense_per_day
-                font_style: "Body2"
+                font_style: "Caption"
                 text_color: "green"
             
 
@@ -184,17 +186,17 @@ AddBudgetModuleKV = '''
                     pos: self.pos
                     radius: [(15, 15), (15, 15), (15, 15), (15, 15)]
             MDLabel:
-                text: "Budget left for this month: "
-                font_style: "H6"
+                text: "Budget surplus (month): "
+                font_style: "Subtitle2"
                 # text_color:
             MDLabel:
                 id: surplus_month
-                font_style: "H6"
+                font_style: "Subtitle2"
                 text_color: "green"
 
     ########################### Budget #############################
 <MDAllButton>:
-    icon_size: "26sp"
+    icon_size: "20sp"
     icon: "all-inclusive"
     md_bg_color: rgba("#fcefff")
 

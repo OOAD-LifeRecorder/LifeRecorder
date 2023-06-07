@@ -303,29 +303,31 @@ class ExpenseTrackerScreen(MDScreen):
         self.current_module = self.add_expense_module
 
         self.load_widget(mode="expense")
-        self.add_widget(DatePicker(self.current_module))
-        self.add_widget(SwitchMode())
 
     def load_widget(self, mode=None):
         self.current_module.save_to_database()
         self.clear_widgets()
         if mode == "expense":
             self.current_module = self.add_expense_module
+            self.add_widget(self.current_module)
             self.add_widget(DatePicker(self.current_module))
+            self.add_widget(ContainerB())
+            # self.box.add_widget(ToOverviewAndBudget())
         else:
             self.current_module = self.add_budget_module
+            self.add_widget(self.current_module)
             self.add_widget(DateRangePicker(self.add_budget_module))
+            self.add_widget(ContainerE())
 
-        self.add_widget(self.current_module)
         self.current_module.init()
 
     def clear_widgets(self):
         unwanted = [
-            child for child in self.children if not isinstance(child, SwitchMode)]
+            child for child in self.children if not isinstance(child, MDBoxLayout)]
         for w in unwanted:
             self.remove_widget(w)
         if len(self.children) > 0:
-            self.children[0].close_stack()
+            self.children[0].clear_widgets()
 
     def on_enter(self):
         DatabaseEmulator.db_print_all_expenses()
@@ -461,6 +463,7 @@ class AddExpenseModule(MDGridLayout):
                 self.expense_list.append(self.current_expense)
 
             self.clear_input()
+            self.init_budget_and_expense_overview()
             self.update_total_and_budget_view()
 
     def update_total_and_budget_view(self):
@@ -694,10 +697,9 @@ class AddBudgetModule(MDGridLayout):
         surplus = b.get_surplus_by_type_date_range(self.date_range)
         str_style = self.str_style_maker(surplus)
         if type == 'all':
-            list_item.secondary_text = "Your overall budget for this month: " + \
-                str_style["dollar"]
+            list_item.secondary_text = "Overall budget (Monthly)"
         else:
-            list_item.secondary_text = "You have spent: "+str_style["dollar"]
+            list_item.secondary_text = "Budget Surplus: "+str_style["dollar"]
         list_item.secondary_text_color = str_style["color"]
 
         self.ids.budget_list_widget.add_widget(list_item)
@@ -806,6 +808,8 @@ class DateRangePicker(MDAnchorLayout):
         date_dialog.open()
 
     def on_save(self, instance, value, date_range):
+        if len(date_range) == 0:
+            return
         self.set_picker_text_date_range(date_range[0])
         first_and_last_day = [date_range[0], date_range[len(date_range)-1]]
         self.module.set_date_range(first_and_last_day)
